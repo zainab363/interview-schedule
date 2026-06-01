@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interview Availability — June 2026 to December 2027</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif; background: #f0f2f5; padding: 20px 24px 40px; color: #1a1a2e; font-size: 13px; }
+
+h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; color: #1a1a2e; }
+.subtitle { font-size: 12px; color: #666; margin-bottom: 18px; line-height: 1.5; }
+
+/* LEGEND */
+.legend { background: #fff; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: flex-start; }
+.legend-group { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.legend-heading { font-size: 10px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: .5px; width: 100%; margin-bottom: 2px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #444; }
+.legend-swatch { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; }
+.sw-cohort    { background: #c8f0d8; border: 1px solid #7dd0a0; }
+.sw-orient    { background: #cce5ff; border: 1px solid #80b8f0; }
+.sw-demoday   { background: #ffeeba; border: 1px solid #e0c060; }
+.sw-prog      { background: #e8d5f5; border: 1px solid #b080d8; }
+.sw-gap       { background: #f0f2f5; border: 1px solid #ccc; }
+.sw-interview { background: #1a9e50; }
+.sw-interview-prog { background: #7e30c0; }
+.sw-blocked   { background: #f5c6cb; border: 1px solid #e08090; }
+.sw-today     { background: #fff; border: 2px solid #e74c3c; }
+
+/* YEAR SECTIONS */
+.year-section { margin-bottom: 28px; }
+.year-label { font-size: 17px; font-weight: 700; color: #333; margin-bottom: 12px; padding-left: 2px; border-left: 4px solid #1a9e50; padding-left: 10px; }
+.months-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+
+/* MONTH CARD */
+.month-card { background: #fff; border-radius: 10px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.month-name { font-size: 13px; font-weight: 700; text-align: center; margin-bottom: 6px; color: #222; }
+
+/* CALENDAR GRID */
+.cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.dow { font-size: 9px; font-weight: 700; text-align: center; color: #aaa; padding-bottom: 4px; text-transform: uppercase; }
+.day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: default;
+  position: relative;
+  gap: 1px;
+}
+.day-num { font-size: 10px; }
+.day-star { font-size: 7px; line-height: 1; opacity: 0.9; }
+.empty { background: transparent; }
+
+/* Phase backgrounds */
+.p-gap         { background: #f4f5f7; color: #bbb; }
+.p-orientation { background: #daeeff; color: #2060aa; font-weight: 600; }
+.p-demoday     { background: #fff3cd; color: #996600; font-weight: 600; }
+.p-prog        { background: #ede0f8; color: #7030b0; font-weight: 600; }
+.p-cohort      { background: #e0f5ea; color: #177040; font-weight: 600; }
+
+/* Interview day overrides */
+.p-interview   { background: #1a9e50; color: #fff; font-weight: 800; }
+.p-interview-prog { background: #7e30c0; color: #fff; font-weight: 800; }
+.p-blocked     { background: #f5c6cb; color: #a01030; font-weight: 700; }
+
+/* Today outline */
+.is-today { outline: 2.5px solid #e74c3c; outline-offset: -2px; border-radius: 4px; }
+
+/* TOOLTIP */
+[data-tip] { position: relative; }
+[data-tip]:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20,20,40,0.92);
+  color: #fff;
+  font-size: 10px;
+  line-height: 1.4;
+  padding: 5px 9px;
+  border-radius: 5px;
+  white-space: pre;
+  z-index: 999;
+  pointer-events: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  min-width: 160px;
+  max-width: 260px;
+}
+
+/* SUMMARY */
+.summary-section { background: #fff; border-radius: 10px; padding: 18px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 20px; }
+.summary-section h2 { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: #222; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+thead th { background: #f4f5f7; padding: 7px 10px; text-align: left; font-size: 11px; font-weight: 700; color: #555; }
+tbody td { padding: 6px 10px; border-bottom: 1px solid #f0f2f5; vertical-align: top; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: #fafbfc; }
+.badge { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 10px; font-weight: 700; line-height: 1.6; }
+.badge-available { background: #d4f0e0; color: #157040; }
+.badge-blocked   { background: #f5c6cb; color: #a01030; }
+.badge-prog      { background: #ede0f8; color: #7030b0; }
+.badge-none      { background: #f0f2f5; color: #888; }
+
+.totals-row td { font-weight: 700; background: #f8f9fb; }
+
+.notes { font-size: 11px; color: #666; margin-top: 12px; line-height: 1.6; }
+.notes li { margin-left: 16px; margin-bottom: 3px; }
+
+/* INTERVIEW LIST */
+.phase-group { margin-bottom: 16px; }
+.phase-group-header { font-size: 12px; font-weight: 700; color: #444; margin-bottom: 6px; padding: 4px 8px; background: #f4f5f7; border-radius: 4px; border-left: 3px solid #1a9e50; }
+.phase-group-header.prog { border-left-color: #7e30c0; }
+.date-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip { padding: 3px 9px; border-radius: 12px; font-size: 10px; font-weight: 600; line-height: 1.5; }
+.chip-mon-interview { background: #1a9e50; color: #fff; }
+.chip-wed-interview { background: #5cba80; color: #fff; }
+.chip-prog-interview { background: #7e30c0; color: #fff; }
+.chip-blocked { background: #f5c6cb; color: #a01030; text-decoration: line-through; }
+.chip-label { font-size: 9px; opacity: 0.8; }
+</style>
+</head>
+<body>
+
+<h1>Interview Availability Calendar</h1>
+<p class="subtitle">
+  June 1, 2026 – December 31, 2027 &nbsp;·&nbsp; All structured interview slots: 9:00–11:00am CT (7 × 15 min) + 15 min debrief on Mondays<br>
+  <strong>Interviewer 1:</strong> US-based — observes US federal holidays, Eid al-Fitr, Eid al-Adha, kids' bdays (Sep 2, Sep 20, Mar 5) &nbsp;|&nbsp;
+  <strong>Interviewer 2:</strong> UK-based — observes UK bank holidays, birthday May 28
+</p>
+
+<div class="legend">
+  <div class="legend-group">
+    <div class="legend-heading">Program Phases</div>
+    <div class="legend-item"><div class="legend-swatch sw-cohort"></div> Active Cohort</div>
+    <div class="legend-item"><div class="legend-swatch sw-orient"></div> Orientation (no interviews)</div>
+    <div class="legend-item"><div class="legend-swatch sw-demoday"></div> Demo Day Week (no interviews)</div>
+    <div class="legend-item"><div class="legend-swatch sw-prog"></div> Cohort Programming</div>
+    <div class="legend-item"><div class="legend-swatch sw-gap"></div> Between Cohorts</div>
+  </div>
+  <div class="legend-group">
+    <div class="legend-heading">Interview Days</div>
+    <div class="legend-item"><div class="legend-swatch sw-interview"></div> Interview Day — Cohort (Mon ★ or Wed)</div>
+    <div class="legend-item"><div class="legend-swatch sw-interview-prog"></div> Interview Day — Cohort Programming (Mon/Tue/Wed)</div>
+    <div class="legend-item"><div class="legend-swatch sw-blocked"></div> Blocked — Interviewer Holiday / Personal Day</div>
+    <div class="legend-item"><div class="legend-swatch sw-today"></div> Today (Jun 1, 2026)</div>
+  </div>
+</div>
+
+<div id="calendar"></div>
+<div id="summary"></div>
+
+<script>
+// ─────────────────────────────────────────────
+// PHASE DEFINITIONS
+// ─────────────────────────────────────────────
+// [startStr, endStr, type, label]
+// Types: gap | orientation | cohort | demoday | prog
+const PHASES = [
+  ['2026-06-01','2026-07-12','cohort','ALL17 Cohort (active)'],
+  ['2026-07-13','2026-07-17','demoday','ALL17 Demo Day Week'],
+  ['2026-07-18','2026-07-22','prog','Cohort Programming (ALL17→18)'],
+  ['2026-07-23','2026-09-06','gap','Between Cohorts'],
+  ['2026-09-07','2026-09-18','orientation','ALL18 Orientation'],
+  ['2026-09-19','2026-11-08','cohort','ALL18 Cohort (active)'],
+  ['2026-11-09','2026-11-13','demoday','ALL18 Demo Day Week'],
+  ['2026-11-14','2026-11-18','prog','Cohort Programming (ALL18→19)'],
+  ['2026-11-19','2026-12-31','gap','Between Cohorts'],
+  ['2027-01-01','2027-01-10','gap','Between Cohorts'],
+  ['2027-01-11','2027-01-29','orientation','ALL19 Orientation'],
+  ['2027-01-30','2027-03-14','cohort','ALL19 Cohort (active)'],
+  ['2027-03-15','2027-03-19','demoday','ALL19 Demo Day Week'],
+  ['2027-03-20','2027-03-24','prog','Cohort Programming (ALL19→20)'],
+  ['2027-03-25','2027-05-09','gap','Between Cohorts'],
+  ['2027-05-10','2027-05-21','orientation','ALL20 Orientation'],
+  ['2027-05-22','2027-07-11','cohort','ALL20 Cohort (active)'],
+  ['2027-07-12','2027-07-16','demoday','ALL20 Demo Day Week'],
+  ['2027-07-17','2027-07-21','prog','Cohort Programming (ALL20→21)'],
+  ['2027-07-22','2027-09-05','gap','Between Cohorts'],
+  ['2027-09-06','2027-09-17','orientation','ALL21 Orientation'],
+  ['2027-09-18','2027-11-07','cohort','ALL21 Cohort (active)'],
+  ['2027-11-08','2027-11-12','demoday','ALL21 Demo Day Week'],
+  ['2027-11-13','2027-11-17','prog','Cohort Programming (ALL21→22)'],
+  ['2027-11-18','2027-12-31','gap','Between Cohorts'],
+];
+
+// ─────────────────────────────────────────────
+// BLOCKED DATES (during would-be interview days)
+// ─────────────────────────────────────────────
+const BLOCKED = {
+  '2026-10-12': 'Columbus Day\n(Int. 1 — US federal holiday)',
+  // Note: 2026-11-11 Veterans Day falls within Demo Day Week (no interviews anyway)
+  '2027-02-15': "Presidents' Day\n(Int. 1 — US federal holiday)",
+  '2027-03-10': 'Eid al-Fitr (approx.)\n(Int. 1 — religious holiday)\n⚠ Exact date subject to moon sighting',
+  '2027-07-05': 'Independence Day (observed)\n(Int. 1 — US federal holiday)',
+  '2027-09-20': "Kids' Birthday\n(Int. 1 — personal day)",
+  '2027-10-11': 'Columbus Day\n(Int. 1 — US federal holiday)',
+};
+
+// ─────────────────────────────────────────────
+// NOTE ON ADDITIONAL HOLIDAYS (non-impacting)
+// ─────────────────────────────────────────────
+// The following holidays fall during gap/orientation/demo day periods
+// (already no interviews) so they do not reduce interview availability:
+//   Int. 1: Labor Day Sep 7 2026 (orientation), Juneteenth Jun 19 2026 (Fri),
+//           Independence Day Jul 4 2026 (Sat/Fri observed), Thanksgiving Nov 26 2026 (Thu),
+//           New Year's Jan 1 2027, MLK Day Jan 18 2027 (orientation),
+//           Memorial Day May 31 2027 (orientation), Juneteenth Jun 19 2027 (Sat/Fri),
+//           Labor Day Sep 6 2027 (orientation), Veterans Day Nov 11 2027 (Thu),
+//           Thanksgiving Nov 25 2027, Eid al-Adha 2026 (May 27, before scope),
+//           Eid al-Adha 2027 (~May 17, during orientation)
+//   Int. 2: All UK bank holidays in scope fall during gap/orientation/demo day periods.
+//           Birthday May 28 falls on Thu 2026 and Fri 2027 — not Mon/Wed interview days.
+
+// ─────────────────────────────────────────────
+// BUILD PHASE MAP
+// ─────────────────────────────────────────────
+const phaseMap = {};
+function parseDS(str) {
+  const [y,m,d] = str.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+function toDS(date) {
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
+for (const [s, e, type, label] of PHASES) {
+  let cur = parseDS(s);
+  const end = parseDS(e);
+  while (cur <= end) {
+    phaseMap[toDS(cur)] = { type, label };
+    cur.setDate(cur.getDate() + 1);
+  }
+}
+function getPhase(ds) {
+  return phaseMap[ds] || { type: 'gap', label: 'Between Cohorts' };
+}
+
+// Interview day rules: returns true if this day/phase combo is an interview day
+// dow: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+function isInterviewDay(ds, dow) {
+  const p = getPhase(ds);
+  if (p.type === 'cohort') return dow === 1 || dow === 3; // Mon or Wed
+  if (p.type === 'prog')   return dow === 1 || dow === 2 || dow === 3; // Mon, Tue, or Wed
+  return false;
+}
+
+// ─────────────────────────────────────────────
+// CALENDAR RENDERING
+// ─────────────────────────────────────────────
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DOW = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+const TODAY_DS = '2026-06-01';
+
+function renderMonth(year, month) {
+  const first = new Date(year, month, 1);
+  const last  = new Date(year, month+1, 0);
+  const startDow = first.getDay();
+
+  let html = `<div class="month-card"><div class="month-name">${MONTHS[month]} ${year}</div><div class="cal">`;
+  DOW.forEach(d => { html += `<div class="dow">${d}</div>`; });
+  for (let i = 0; i < startDow; i++) html += `<div class="day empty"></div>`;
+
+  for (let d = 1; d <= last.getDate(); d++) {
+    const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const date = new Date(year, month, d);
+    const dow  = date.getDay();
+    const phase = getPhase(ds);
+    const blocked = BLOCKED[ds] || null;
+    const isInterview = isInterviewDay(ds, dow);
+    const isToday = ds === TODAY_DS;
+    const isMon = dow === 1;
+
+    let cls, tip, starHtml = '';
+
+    if (isInterview && blocked) {
+      cls = 'p-blocked';
+      tip = `⛔ BLOCKED\n${blocked}`;
+    } else if (isInterview && phase.type === 'prog') {
+      cls = 'p-interview-prog';
+      tip = `Interview Day (Cohort Programming)\n${phase.label}\nUp to 3 interview days this week`;
+    } else if (isInterview && isMon) {
+      cls = 'p-interview';
+      starHtml = '<span class="day-star">★</span>';
+      tip = `Interview Day — Monday\n${phase.label}\n★ 9:00–11:00am CT: 7 × 15 min interviews\n  + 15 min debrief at 11:00am`;
+    } else if (isInterview) {
+      cls = 'p-interview';
+      tip = `Interview Day — Wednesday\n${phase.label}\nRegular interview day`;
+    } else {
+      const typeMap = { gap:'p-gap', orientation:'p-orientation', demoday:'p-demoday', prog:'p-prog', cohort:'p-cohort' };
+      cls = typeMap[phase.type] || 'p-gap';
+      tip = phase.label;
+      if (phase.type === 'orientation') tip += '\n(No interviews during Orientation)';
+      if (phase.type === 'demoday')     tip += '\n(No interviews during Demo Day Week)';
+      if (phase.type === 'gap')         tip += '\n(No structured interviews)';
+    }
+
+    const todayCls = isToday ? ' is-today' : '';
+    html += `<div class="day ${cls}${todayCls}" data-tip="${tip}">`;
+    html += `<span class="day-num">${d}</span>`;
+    if (starHtml) html += starHtml;
+    html += `</div>`;
+  }
+
+  html += `</div></div>`;
+  return html;
+}
+
+// Render all months
+const calEl = document.getElementById('calendar');
+let calHTML = '';
+
+// 2026: June–December
+calHTML += `<div class="year-section"><div class="year-label">2026</div><div class="months-grid">`;
+for (let m = 5; m <= 11; m++) calHTML += renderMonth(2026, m);
+calHTML += `</div></div>`;
+
+// 2027: January–December
+calHTML += `<div class="year-section"><div class="year-label">2027</div><div class="months-grid">`;
+for (let m = 0; m <= 11; m++) calHTML += renderMonth(2027, m);
+calHTML += `</div></div>`;
+
+calEl.innerHTML = calHTML;
+
+// ─────────────────────────────────────────────
+// SUMMARY TABLE
+// ─────────────────────────────────────────────
+const PHASE_ROWS = [
+  { label: 'ALL17 Cohort (active)',        period: 'Jun 1 – Jul 12, 2026',   type: 'cohort',
+    monDays: ['2026-06-01','2026-06-08','2026-06-15','2026-06-22','2026-06-29','2026-07-06'],
+    wedDays: ['2026-06-03','2026-06-10','2026-06-17','2026-06-24','2026-07-01','2026-07-08'],
+    extraDays: [] },
+  { label: 'ALL17 Demo Day Week',          period: 'Jul 13–17, 2026',        type: 'demoday',
+    monDays:[], wedDays:[], extraDays:[] },
+  { label: 'Cohort Programming (ALL17→18)',period: 'Jul 18–22, 2026',        type: 'prog',
+    monDays: ['2026-07-20'], wedDays: ['2026-07-22'], extraDays: ['2026-07-21'] },
+  { label: 'ALL18 Orientation',            period: 'Sep 7–18, 2026',         type: 'orientation',
+    monDays:[], wedDays:[], extraDays:[] },
+  { label: 'ALL18 Cohort (active)',         period: 'Sep 19 – Nov 8, 2026',  type: 'cohort',
+    monDays: ['2026-09-21','2026-09-28','2026-10-05','2026-10-12','2026-10-19','2026-10-26','2026-11-02'],
+    wedDays: ['2026-09-23','2026-09-30','2026-10-07','2026-10-14','2026-10-21','2026-10-28','2026-11-04'],
+    extraDays: [] },
+  { label: 'ALL18 Demo Day Week',          period: 'Nov 9–13, 2026',         type: 'demoday',
+    monDays:[], wedDays:[], extraDays:[] },
+  { label: 'Cohort Programming (ALL18→19)',period: 'Nov 14–18, 2026',        type: 'prog',
+    monDays: ['2026-11-16'], wedDays: ['2026-11-18'], extraDays: ['2026-11-17'] },
+  { label: 'ALL19 Orientation',            period: 'Jan 11–29, 2027',        type: 'orientation',
+    monDays:[], wedDays:[], extraDays:[] },
+  { label: 'ALL19 Cohort (active)',         period: 'Feb 1 – Mar 14, 2027',  type: 'cohort',
+    monDays: ['2027-02-01','2027-02-08','2027-02-15','2027-02-22','2027-03-01','2027-03-08'],
+    wedDays: ['2027-02-03','2027-02-10','2027-02-17','2027-02-24','2027-03-03','2027-03-10'],
+    extraDays: [] },
+  { label: 'ALL19 Demo Day Week',          period: 'Mar 15–19, 2027',        type: 'demoday',
+    monDays:[], wedDays:[], extraDays:[] },
+  { label: 'Cohort Programming (ALL19→20)',period: 'Mar 20–24, 2027',        type: 'prog',
+    monDays: ['2027-03-22'], wedDays: ['2027-03-24'], extraDays: ['2027-03-23'] },
+  { label: 'ALL20 Orientation',            period: 'May 10–21, 2027',        type: 'orientation',
+    monDays:[], wedDays:[], extraDays:[] },
+  { label: 'ALL20 Cohort (active)',         period: 'May 22 – Jul 11, 2027', type: 'cohort',
+    monDays: ['2027-05-24','2027-05-31','2027-06-07','2027-06-14','2027-06-21','2027-06-28','2027-07-07'],
+    wedDays: ['2027-05-26','2027-06-02','2027-06-09','2027-06-16','2027-06-23','2027-06-30','2027-07-09'],
+    extraDays: [] },
+  { label: 'ALL20 Demo Day Week',          period: 'Jul 12–16, 2027',        type: 'demoday',
+    monDays:[], wedDays:[], extraDays:[] },
+  { label: 'Cohort Programming (ALL20→21)',period: 'Jul 17–21, 2027',        type: 'prog',
+    monDays: ['2027-07-19'], wedDays: ['2027-07-21'], extraDays: ['2027-07-20'] },
+  { label: 'ALL21 Orientation',            period: 'Sep 6–17, 2027',         type: 'orientation',
+    monDays:[], wedDays:[], extraDays:[] },
+  { label: 'ALL21 Cohort (active)',         period: 'Sep 18 – Nov 7, 2027',  type: 'cohort',
+    monDays: ['2027-09-20','2027-09-27','2027-10-04','2027-10-11','2027-10-18','2027-10-25','2027-11-01'],
+    wedDays: ['2027-09-22','2027-09-29','2027-10-06','2027-10-13','2027-10-20','2027-10-27','2027-11-03'],
+    extraDays: [] },
+  { label: 'ALL21 Demo Day Week',          period: 'Nov 8–12, 2027',         type: 'demoday',
+    monDays:[], wedDays:[], extraDays:[] },
+  { label: 'Cohort Programming (ALL21→22)',period: 'Nov 13–17, 2027',        type: 'prog',
+    monDays: ['2027-11-15'], wedDays: ['2027-11-17'], extraDays: ['2027-11-16'] },
+];
+
+function formatDate(ds) {
+  const d = parseDS(ds);
+  const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
+  return `${mo} ${d.getDate()}`;
+}
+
+function renderSummaryRow(row) {
+  const allDays = [...row.monDays, ...row.wedDays, ...row.extraDays];
+  const total = allDays.length;
+
+  if (row.type === 'demoday' || row.type === 'orientation') {
+    const phaseClsMap = { demoday: 'badge-none', orientation: 'badge-none' };
+    return `<tr>
+      <td><strong>${row.label}</strong></td>
+      <td>${row.period}</td>
+      <td><span class="badge badge-none">No interviews</span></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>`;
+  }
+
+  const blockedInPhase = allDays.filter(ds => BLOCKED[ds]);
+  const availableDays = allDays.filter(ds => !BLOCKED[ds]);
+  const phaseType = row.type === 'prog' ? 'prog' : '';
+
+  let blockedHtml = blockedInPhase.length
+    ? blockedInPhase.map(ds => `<span class="badge badge-blocked">${formatDate(ds)}: ${BLOCKED[ds].split('\n')[0]}</span>`).join(' ')
+    : '—';
+
+  let scheduleNote = '';
+  if (row.type === 'cohort') {
+    scheduleNote = `${row.monDays.filter(d=>!BLOCKED[d]).length} Mon (★ structured) + ${row.wedDays.filter(d=>!BLOCKED[d]).length} Wed`;
+  } else if (row.type === 'prog') {
+    scheduleNote = `Mon / Tue / Wed (up to 3/week)`;
+  }
+
+  return `<tr>
+    <td><strong>${row.label}</strong></td>
+    <td>${row.period}</td>
+    <td><span class="badge badge-available">${availableDays.length} available</span>${blockedInPhase.length ? ` <span class="badge badge-blocked">${blockedInPhase.length} blocked</span>` : ''}</td>
+    <td style="font-size:11px;color:#555">${scheduleNote}</td>
+    <td>${blockedHtml}</td>
+  </tr>`;
+}
+
+// Total counts
+let totalAvailable = 0, totalBlocked = 0;
+for (const row of PHASE_ROWS) {
+  if (row.type === 'demoday' || row.type === 'orientation') continue;
+  const all = [...row.monDays, ...row.wedDays, ...row.extraDays];
+  const bl  = all.filter(ds => BLOCKED[ds]);
+  totalAvailable += all.length - bl.length;
+  totalBlocked   += bl.length;
+}
+
+// Interview date list
+function renderDateList() {
+  let html = '';
+  for (const row of PHASE_ROWS) {
+    if (row.type === 'demoday' || row.type === 'orientation') continue;
+    const allDays = row.type === 'cohort'
+      ? [...row.monDays.map(d=>({ds:d,t:'mon'})), ...row.wedDays.map(d=>({ds:d,t:'wed'}))]
+      : [...row.monDays.map(d=>({ds:d,t:'prog'})), ...row.extraDays.map(d=>({ds:d,t:'prog'})), ...row.wedDays.map(d=>({ds:d,t:'prog'}))];
+    allDays.sort((a,b)=>a.ds.localeCompare(b.ds));
+
+    html += `<div class="phase-group">`;
+    html += `<div class="phase-group-header ${row.type==='prog'?'prog':''}">${row.label} &nbsp;·&nbsp; ${row.period}</div>`;
+    html += `<div class="date-chips">`;
+    for (const {ds, t} of allDays) {
+      const d = parseDS(ds);
+      const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      const dn = dayNames[d.getDay()];
+      const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
+      const label = `${dn} ${mo} ${d.getDate()}`;
+      if (BLOCKED[ds]) {
+        const reason = BLOCKED[ds].split('\n')[0];
+        html += `<span class="chip chip-blocked" title="${reason}">${label}</span>`;
+      } else if (t === 'mon') {
+        html += `<span class="chip chip-mon-interview" title="Monday ★ 9:00–11:15am CT structured interviews">${label} ★</span>`;
+      } else if (t === 'wed') {
+        html += `<span class="chip chip-wed-interview" title="Wednesday interview day">${label}</span>`;
+      } else {
+        html += `<span class="chip chip-prog-interview" title="Cohort Programming interview day">${label}</span>`;
+      }
+    }
+    html += `</div></div>`;
+  }
+  return html;
+}
+
+const summaryEl = document.getElementById('summary');
+summaryEl.innerHTML = `
+<div class="summary-section">
+  <h2>Phase Overview &amp; Interview Count</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Phase</th>
+        <th>Dates</th>
+        <th>Availability</th>
+        <th>Schedule Pattern</th>
+        <th>Blocked Days (reason)</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${PHASE_ROWS.map(renderSummaryRow).join('')}
+      <tr class="totals-row">
+        <td colspan="2"><strong>TOTAL (Jun 1, 2026 – Dec 31, 2027)</strong></td>
+        <td><span class="badge badge-available">${totalAvailable} interview days</span> <span class="badge badge-blocked">${totalBlocked} blocked</span></td>
+        <td colspan="2"></td>
+      </tr>
+    </tbody>
+  </table>
+  <ul class="notes">
+    <li><strong>★ Monday format:</strong> 7 back-to-back 15-min interviews (9:00–11:00am CT) + 15-min committee debrief (11:00–11:15am CT).</li>
+    <li><strong>Wednesday format:</strong> Regular interview days (exact format not specified; same pair of interviewers).</li>
+    <li><strong>Cohort Programming:</strong> Up to 3 interview days/week (Mon, Tue, Wed). Founders may only book mentorship on 2 of those days.</li>
+    <li><strong>Eid al-Fitr 2027 (★ approx. Mar 10):</strong> Exact date subject to moon sighting — may shift by 1–2 days. Treat Wed Mar 10 and Thu Mar 11 as potentially blocked.</li>
+    <li><strong>Interviewer 2 (UK):</strong> No UK bank holidays fall on active interview Mon/Wed slots in this entire period — all UK holidays fall during gaps, orientations, or demo day weeks.</li>
+    <li><strong>Kids' birthday Sep 2:</strong> Falls on Wed in 2026 (gap period — no impact) and Thu in 2027 (not an interview day). <strong>Sep 20:</strong> Sun in 2026 (gap), Mon in 2027 (blocks ALL21 first Monday). <strong>Mar 5:</strong> Fri in both years — no impact.</li>
+  </ul>
+</div>
+
+<div class="summary-section">
+  <h2>All Interview Dates</h2>
+  <p style="font-size:11px;color:#666;margin-bottom:12px">
+    <span style="background:#1a9e50;color:#fff;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700">Mon ★</span> = Monday structured slot (9–11:15am CT) &nbsp;
+    <span style="background:#5cba80;color:#fff;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700">Wed</span> = Wednesday interview day &nbsp;
+    <span style="background:#7e30c0;color:#fff;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700">Prog</span> = Cohort Programming interview day &nbsp;
+    <span style="background:#f5c6cb;color:#a01030;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;text-decoration:line-through">Blocked</span> = Holiday / personal day
+  </p>
+  ${renderDateList()}
+</div>
+`;
+</script>
+</body>
+</html>
